@@ -11,7 +11,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.MainScope
 import ru.pseudonimb.clickergame.ui.screens.GameOfSnakes
+import ru.pseudonimb.clickergame.ui.screens.MainScreen
 import ru.pseudonimb.clickergame.ui.screens.Player
 import ru.pseudonimb.clickergame.ui.theme.ClickergameTheme
 import ru.pseudonimb.clickergame.utils.DataStoreManager
@@ -20,27 +25,29 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val game = GameOfSnakes(lifecycleScope)
-        val dataStoreManager = DataStoreManager(this)
-
         setContent {
+            val navController = rememberNavController()
+
             ClickergameTheme {
-                val highScoreState = remember {
-                    mutableStateOf(0)
-                }
-                //Корутина для получения данных при запуске приложения
-                LaunchedEffect(key1 = true){
-                    dataStoreManager.getSettings().collect{settings ->
-                        highScoreState.value = settings.highScore
-                    }
-                }
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                NavHost(
+                    navController = navController,
+                    startDestination = "main_screen"
                 ) {
-//                    MainScreen()
-                    Player(dataStoreManager, highScoreState, game)
+                    composable("main_screen") {
+                        MainScreen({
+                            navController.navigate("game_screen")
+                        })
+                    }
+                    composable("game_screen") {
+                        Player(
+                            { navController.navigate("game_screen"){
+                                popUpTo("main_screen") {
+                                    inclusive = true
+                                }
+                            } },
+                            GameOfSnakes(scope = lifecycleScope)
+                        )
+                    }
                 }
             }
         }

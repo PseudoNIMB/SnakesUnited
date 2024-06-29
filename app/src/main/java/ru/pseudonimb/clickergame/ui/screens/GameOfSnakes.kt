@@ -2,6 +2,7 @@ package ru.pseudonimb.clickergame.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +20,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.navigation.NavController
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +33,9 @@ import ru.pseudonimb.clickergame.utils.SettingsData
 import java.util.*
 
 data class State(val food: Pair<Int, Int>, val snake: List<Pair<Int, Int>>)
+
+var highScore = 0
+var score = 0
 
 class GameOfSnakes(private val scope: CoroutineScope) {
     private val mutex = Mutex()
@@ -49,26 +55,34 @@ class GameOfSnakes(private val scope: CoroutineScope) {
         scope.launch {
             var snakeLength = 4
             highScore = 0
+            score = 0
 
             while (true) {
+                //Скорость змейки (чем ближе к нулю тем быстрее)
                 delay(200)
                 mutableState.update {
-                    val newPosition = it.snake.first().let { poz ->
+                    val newPosition = it.snake.first().let { position ->
                         mutex.withLock {
                             Pair(
-                                (poz.first + move.first + BOARD_SIZE) % BOARD_SIZE,
-                                (poz.second + move.second + BOARD_SIZE) % BOARD_SIZE
+                                (position.first + move.first + BOARD_SIZE) % BOARD_SIZE,
+                                (position.second + move.second + BOARD_SIZE) % BOARD_SIZE
                             )
                         }
                     }
 
+                    //Если змея съёла еду
                     if (newPosition == it.food) {
                         snakeLength++
+                        score++
                     }
 
+                    //Если змея врезалась в себя
                     if (it.snake.contains(newPosition)) {
-                        highScore = snakeLength
+                        if (highScore<snakeLength) highScore = (snakeLength - 4)
+                        //TODO вставлять тут хайскор и диалоговое окно
+
                         snakeLength = 4
+                        score = 0
                     }
 
                     it.copy(
@@ -90,9 +104,10 @@ class GameOfSnakes(private val scope: CoroutineScope) {
 
 //Весь экран
 @Composable
-fun Player(dataStoreManager: DataStoreManager, highScoreState: MutableState<Int>, game: GameOfSnakes) {
-    val coroutine = rememberCoroutineScope()
-
+fun Player(
+    onClick: () -> Unit,
+    game: GameOfSnakes
+) {
     val state = game.state.collectAsState(initial = null)
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
@@ -103,7 +118,7 @@ fun Player(dataStoreManager: DataStoreManager, highScoreState: MutableState<Int>
             color = Color.DarkGray,
             fontFamily = FontFamily.Monospace,
             fontSize = 24.sp,
-            text = if (highScoreState.value<=0) "HIGHSCORE: 0" else "HIGHSCORE: " + (highScoreState.value-4).toString()
+            text = "HIGHSCORE: " + highScore
         )
         Text(
             modifier = Modifier
@@ -112,7 +127,7 @@ fun Player(dataStoreManager: DataStoreManager, highScoreState: MutableState<Int>
             color = Color.DarkGray,
             fontFamily = FontFamily.Monospace,
             fontSize = 24.sp,
-            text = "SCORE: " + (state.value?.snake?.size?.minus(4)).toString()
+            text = "SCORE: " + score
         )
         state.value?.let {
             Board(it)
@@ -136,31 +151,55 @@ fun Buttons(onDirectionChange: (Pair<Int, Int>) -> Unit) {
     }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
-        Button(onClick = {
-            onDirectionChange(Pair(0, -1))
-            movement = true
-                         }, enabled = !movement, modifier = buttonSize, colors = ButtonDefaults.buttonColors(Color.DarkGray), shape = buttonShape) {
+        Button(
+            onClick = {
+                onDirectionChange(Pair(0, -1))
+                movement = true
+            },
+            enabled = !movement,
+            modifier = buttonSize,
+            colors = ButtonDefaults.buttonColors(Color.Gray),
+            shape = buttonShape
+        ) {
             Icon(Icons.Default.KeyboardArrowUp, "Up")
         }
         Row {
-            Button(onClick = {
-                onDirectionChange(Pair(-1, 0))
-                movement = false
-                             }, enabled = movement, modifier = buttonSize, colors = ButtonDefaults.buttonColors(Color.DarkGray), shape = buttonShape) {
+            Button(
+                onClick = {
+                    onDirectionChange(Pair(-1, 0))
+                    movement = false
+                },
+                enabled = movement,
+                modifier = buttonSize,
+                colors = ButtonDefaults.buttonColors(Color.Gray),
+                shape = buttonShape
+            ) {
                 Icon(Icons.Default.KeyboardArrowLeft, "Left")
             }
             Spacer(modifier = buttonSize)
-            Button(onClick = {
-                onDirectionChange(Pair(1, 0))
-                movement = false
-                             }, enabled = movement, modifier = buttonSize, colors = ButtonDefaults.buttonColors(Color.DarkGray), shape = buttonShape) {
+            Button(
+                onClick = {
+                    onDirectionChange(Pair(1, 0))
+                    movement = false
+                },
+                enabled = movement,
+                modifier = buttonSize,
+                colors = ButtonDefaults.buttonColors(Color.Gray),
+                shape = buttonShape
+            ) {
                 Icon(Icons.Default.KeyboardArrowRight, "Right")
             }
         }
-        Button(onClick = {
-            onDirectionChange(Pair(0, 1))
-            movement = true
-                         }, enabled = !movement, modifier = buttonSize, colors = ButtonDefaults.buttonColors(Color.DarkGray), shape = buttonShape) {
+        Button(
+            onClick = {
+                onDirectionChange(Pair(0, 1))
+                movement = true
+            },
+            enabled = !movement,
+            modifier = buttonSize,
+            colors = ButtonDefaults.buttonColors(Color.Gray),
+            shape = buttonShape
+        ) {
             Icon(Icons.Default.KeyboardArrowDown, "Down")
         }
     }

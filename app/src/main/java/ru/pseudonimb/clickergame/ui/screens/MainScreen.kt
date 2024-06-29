@@ -16,25 +16,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.datastore.dataStore
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.MainScope
 
 @Composable
-fun MainScreen() {
+fun MainScreen(onClick: () -> Unit) {
 
     val buttonShape = RoundedCornerShape(16.dp)
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
+    val buttonSize = Modifier.height(96.dp).fillMaxWidth().padding(16.dp)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom,
+        modifier = Modifier.padding(24.dp).fillMaxSize()
+    ) {
         Button(
-            onClick = {  },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(Color.DarkGray),
-            shape = buttonShape
+            onClick = {
+                onClick()
+            },
+            modifier = buttonSize,
+            shape = buttonShape,
+            colors = ButtonDefaults.buttonColors(Color.Gray)
         ) {
             Text(text = "Начать игру")
         }
         Button(
             onClick = {  },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(Color.DarkGray),
-            shape = buttonShape
+            modifier = buttonSize,
+            shape = buttonShape,
+            colors = ButtonDefaults.buttonColors(Color.Gray)
         ) {
             Text(text = "Настройки")
         }
