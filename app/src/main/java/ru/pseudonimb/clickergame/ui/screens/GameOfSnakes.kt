@@ -2,7 +2,6 @@ package ru.pseudonimb.clickergame.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,20 +15,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.navigation.NavController
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import ru.pseudonimb.clickergame.utils.DataStoreManager
-import ru.pseudonimb.clickergame.utils.SettingsData
 import java.util.*
 
 data class State(val food: Pair<Int, Int>, val snake: List<Pair<Int, Int>>)
@@ -37,10 +33,11 @@ data class State(val food: Pair<Int, Int>, val snake: List<Pair<Int, Int>>)
 var highScore = 0
 var score = 0
 
-class GameOfSnakes(private val scope: CoroutineScope) {
+class GameOfSnakes(private val scope: CoroutineScope, val navigateMainMenu: () -> Unit) {
     private val mutex = Mutex()
     private val mutableState = MutableStateFlow(State(food = Pair(5, 5), snake = listOf(Pair(7, 7))))
     val state: Flow<State> = mutableState
+    val dialogState = mutableStateOf(false)
 
     var move = Pair(1, 0)
         set(value) {
@@ -54,7 +51,6 @@ class GameOfSnakes(private val scope: CoroutineScope) {
     init {
         scope.launch {
             var snakeLength = 4
-            highScore = 0
             score = 0
 
             while (true) {
@@ -78,11 +74,13 @@ class GameOfSnakes(private val scope: CoroutineScope) {
 
                     //Если змея врезалась в себя
                     if (it.snake.contains(newPosition)) {
-                        if (highScore<snakeLength) highScore = (snakeLength - 4)
-                        //TODO вставлять тут хайскор и диалоговое окно
+                        if (dialogState.value == false) {
+                            if (highScore<(snakeLength-4) && snakeLength>4) highScore = (snakeLength - 4)
 
-                        snakeLength = 4
-                        score = 0
+                            snakeLength = 4
+                            score = 0
+                        }
+                        dialogState.value = true
                     }
 
                     it.copy(
@@ -99,6 +97,7 @@ class GameOfSnakes(private val scope: CoroutineScope) {
 
     companion object {
         const val BOARD_SIZE = 16
+
     }
 }
 
@@ -131,6 +130,9 @@ fun Player(
         )
         state.value?.let {
             Board(it)
+        }
+        if (game.dialogState.value) {
+            DialogCollision(game.dialogState, game.navigateMainMenu)
         }
         Buttons {
             game.move = it
@@ -240,4 +242,27 @@ fun Board(state: State) {
             )
         }
     }
+}
+
+@Composable
+fun DialogCollision (dialogState: MutableState<Boolean>, navigateMainMenu: () -> Unit) {
+    AlertDialog(onDismissRequest = {
+        dialogState.value = false
+    }, confirmButton = {
+        TextButton(onClick = {
+            dialogState.value = false
+        }) {
+            Text(text = "Попробовать ещё раз")
+        }
+    }, dismissButton = {
+        TextButton(onClick = {
+            dialogState.value = false
+            navigateMainMenu.invoke()
+        }) {
+            Text(text = "Главное меню")
+        }
+    }, title = {
+        Text(text = "Игра окончена.\nВаш рекорд $highScore очков")
+    })
+
 }
