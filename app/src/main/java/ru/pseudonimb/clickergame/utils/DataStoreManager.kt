@@ -7,7 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.map
 
 data class SettingsData(
-    val highScore: Int
+    val sharedHighScore: Int
 )
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("data_storage")
@@ -16,7 +16,7 @@ class DataStoreManager(val context: Context) {
 
     suspend fun saveSettings(dataSettings: SettingsData) {
         context.dataStore.edit {pref ->
-            pref[intPreferencesKey("high_score")] = dataSettings.highScore
+            pref[intPreferencesKey("high_score")] = dataSettings.sharedHighScore
         }
     }
 

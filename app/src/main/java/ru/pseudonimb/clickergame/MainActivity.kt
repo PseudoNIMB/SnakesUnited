@@ -11,14 +11,14 @@ import ru.pseudonimb.clickergame.ui.screens.GameOfSnakes
 import ru.pseudonimb.clickergame.ui.screens.MainScreen
 import ru.pseudonimb.clickergame.ui.screens.Player
 import ru.pseudonimb.clickergame.ui.theme.ClickergameTheme
+import ru.pseudonimb.clickergame.utils.DataStoreManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val dataStoreManager = DataStoreManager(this)
         setContent {
             val navController = rememberNavController()
-
             ClickergameTheme {
                 NavHost(
                     navController = navController,
@@ -39,14 +39,16 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             GameOfSnakes(
-                                scope = lifecycleScope
-                            ) {
-                                navController.navigate("main_screen") {
-                                    popUpTo("main_screen") {
-                                        inclusive = true
+                                scope = lifecycleScope,
+                                {
+                                    navController.navigate("main_screen") {
+                                        popUpTo("main_screen") {
+                                            inclusive = true
+                                        }
                                     }
-                                }
-                            }
+                                },
+                                dataStoreManager = dataStoreManager
+                            )
                         )
                     }
                 }
