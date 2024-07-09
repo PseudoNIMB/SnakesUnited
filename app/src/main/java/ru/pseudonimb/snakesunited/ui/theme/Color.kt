@@ -1,4 +1,4 @@
-package ru.pseudonimb.clickergame.ui.theme
+package ru.pseudonimb.snakesunited.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

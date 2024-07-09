@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "clickergame"
+rootProject.name = "snakesunited"
 include(":app")

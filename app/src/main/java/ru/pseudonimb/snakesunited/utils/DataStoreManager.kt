@@ -1,4 +1,4 @@
-package ru.pseudonimb.clickergame.utils
+package ru.pseudonimb.snakesunited.utils
 
 import android.content.Context
 import androidx.datastore.core.DataStore

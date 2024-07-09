@@ -1,4 +1,4 @@
-package ru.pseudonimb.clickergame.ui.screens
+package ru.pseudonimb.snakesunited.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,9 +27,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import ru.pseudonimb.clickergame.ui.data.GameData
-import ru.pseudonimb.clickergame.utils.DataStoreManager
-import ru.pseudonimb.clickergame.utils.SettingsData
+import ru.pseudonimb.snakesunited.ui.data.GameData
+import ru.pseudonimb.snakesunited.utils.DataStoreManager
+import ru.pseudonimb.snakesunited.utils.SettingsData
 import java.util.*
 
 class GameOfSnakes(
@@ -121,7 +121,7 @@ fun Player(
     val state = game.gameData.collectAsState(initial = null)
     val dataState = game.dataStoreManager.getSettings().collectAsState(initial = SettingsData())
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom, modifier = Modifier.padding(0.dp, 16.dp).fillMaxSize()) {
         Text(
             modifier = Modifier
                 .align(Alignment.End)
@@ -165,56 +165,56 @@ fun Buttons(onDirectionChange: (Pair<Int, Int>) -> Unit) {
     }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
-        Button(
+        OutlinedButton(
             onClick = {
                 onDirectionChange(Pair(0, -1))
                 movement = true
             },
             enabled = !movement,
             modifier = buttonSize,
-            colors = ButtonDefaults.buttonColors(Color.Gray),
             shape = buttonShape
         ) {
-            Icon(Icons.Default.KeyboardArrowUp, "Up")
+            Icon(Icons.Default.KeyboardArrowUp, "Up",
+                modifier = Modifier.size(32.dp))
         }
         Row {
-            Button(
+            OutlinedButton(
                 onClick = {
                     onDirectionChange(Pair(-1, 0))
                     movement = false
                 },
                 enabled = movement,
                 modifier = buttonSize,
-                colors = ButtonDefaults.buttonColors(Color.Gray),
                 shape = buttonShape
             ) {
-                Icon(Icons.Default.KeyboardArrowLeft, "Left")
+                Icon(Icons.Default.KeyboardArrowLeft, "Left",
+                    modifier = Modifier.size(32.dp))
             }
             Spacer(modifier = buttonSize)
-            Button(
+            OutlinedButton(
                 onClick = {
                     onDirectionChange(Pair(1, 0))
                     movement = false
                 },
                 enabled = movement,
                 modifier = buttonSize,
-                colors = ButtonDefaults.buttonColors(Color.Gray),
                 shape = buttonShape
             ) {
-                Icon(Icons.Default.KeyboardArrowRight, "Right")
+                Icon(Icons.Default.KeyboardArrowRight, "Right",
+                    modifier = Modifier.size(32.dp))
             }
         }
-        Button(
+        OutlinedButton(
             onClick = {
                 onDirectionChange(Pair(0, 1))
                 movement = true
             },
             enabled = !movement,
             modifier = buttonSize,
-            colors = ButtonDefaults.buttonColors(Color.Gray),
             shape = buttonShape
         ) {
-            Icon(Icons.Default.KeyboardArrowDown, "Down")
+            Icon(Icons.Default.KeyboardArrowDown, "Down",
+                modifier = Modifier.size(32.dp))
         }
     }
 }
@@ -222,7 +222,7 @@ fun Buttons(onDirectionChange: (Pair<Int, Int>) -> Unit) {
 //Игровое поле
 @Composable
 fun Board(gameData: GameData) {
-    BoxWithConstraints(Modifier.padding(16.dp)) {
+    BoxWithConstraints(Modifier.padding(20.dp)) {
         val tileSize = maxWidth / GameOfSnakes.BOARD_SIZE
 
         //Граница игрового поля
@@ -246,8 +246,9 @@ fun Board(gameData: GameData) {
         gameData.snake.forEach {
             Box(
                 modifier = Modifier
+                    .padding(1.dp)
                     .offset(x = tileSize * it.first, y = tileSize * it.second)
-                    .size(tileSize)
+                    .size(tileSize * 0.9f)
                     .background(
                         Color.DarkGray, shape = RoundedCornerShape(16)
                     )
@@ -266,17 +267,17 @@ fun DialogCollision(dialogState: MutableState<Boolean>, navigateMainMenu: () -> 
         TextButton(onClick = {
             dialogState.value = false
         }) {
-            Text(text = "Попробовать ещё раз")
+            Text(text = "Try again")
         }
     }, dismissButton = {
         TextButton(onClick = {
             dialogState.value = false
             navigateMainMenu.invoke()
         }) {
-            Text(text = "Главное меню")
+            Text(text = "Main menu")
         }
     }, title = {
-        Text(text = "Игра окончена.\nВаш рекорд $finalHighScore очков")
+        Text(text = "Game over.\nYour best score is $finalHighScore")
     })
 
 }

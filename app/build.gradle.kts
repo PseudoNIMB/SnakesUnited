@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "ru.pseudonimb.clickergame"
+    namespace = "ru.pseudonimb.snakesunited"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "ru.pseudonimb.clickergame"
+        applicationId = "ru.pseudonimb.snakesunited"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

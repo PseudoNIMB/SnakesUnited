@@ -1,4 +1,4 @@
-package ru.pseudonimb.clickergame
+package ru.pseudonimb.snakesunited
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,12 +7,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ru.pseudonimb.clickergame.ui.screens.GameOfSnakes
-import ru.pseudonimb.clickergame.ui.screens.MainScreen
-import ru.pseudonimb.clickergame.ui.screens.Player
-import ru.pseudonimb.clickergame.ui.screens.RecordsScreen
-import ru.pseudonimb.clickergame.ui.theme.ClickergameTheme
-import ru.pseudonimb.clickergame.utils.DataStoreManager
+import ru.pseudonimb.snakesunited.ui.screens.GameOfSnakes
+import ru.pseudonimb.snakesunited.ui.screens.MainScreen
+import ru.pseudonimb.snakesunited.ui.screens.Player
+import ru.pseudonimb.snakesunited.ui.screens.RecordsScreen
+import ru.pseudonimb.snakesunited.ui.theme.MainTheme
+import ru.pseudonimb.snakesunited.utils.DataStoreManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         val dataStoreManager = DataStoreManager(this)
         setContent {
             val navController = rememberNavController()
-            ClickergameTheme {
+            MainTheme {
                 NavHost(
                     navController = navController,
                     startDestination = "main_screen"

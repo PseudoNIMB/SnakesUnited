@@ -1,4 +1,4 @@
-package ru.pseudonimb.clickergame
+package ru.pseudonimb.snakesunited
 
 import org.junit.Test
 

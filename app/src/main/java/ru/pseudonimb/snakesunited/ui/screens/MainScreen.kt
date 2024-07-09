@@ -1,15 +1,15 @@
-package ru.pseudonimb.clickergame.ui.screens
+package ru.pseudonimb.snakesunited.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun MainScreen(navigateToGame: () -> Unit, navigateToRecords: () -> Unit) {
@@ -21,25 +21,24 @@ fun MainScreen(navigateToGame: () -> Unit, navigateToRecords: () -> Unit) {
         verticalArrangement = Arrangement.Bottom,
         modifier = Modifier.padding(24.dp).fillMaxSize()
     ) {
-        Button(
+        OutlinedButton(
             onClick = {
                 navigateToGame.invoke()
             },
             modifier = buttonSize,
-            shape = buttonShape,
-            colors = ButtonDefaults.buttonColors(Color.Gray)
+            colors = ButtonDefaults.outlinedButtonColors(),
+            shape = buttonShape
         ) {
-            Text(text = "Начать игру")
+            Text(text = "New game", fontSize = 16.sp)
         }
-        Button(
+        OutlinedButton(
             onClick = {
                 navigateToRecords.invoke()
             },
             modifier = buttonSize,
-            shape = buttonShape,
-            colors = ButtonDefaults.buttonColors(Color.Gray)
+            shape = buttonShape
         ) {
-            Text(text = "Рекорды")
+            Text(text = "Leaderboards", fontSize = 16.sp)
         }
     }
 }
