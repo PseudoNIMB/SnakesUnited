@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MainScreen(navigateToGame: () -> Unit) {
+fun MainScreen(navigateToGame: () -> Unit, navigateToRecords: () -> Unit) {
 
     val buttonShape = RoundedCornerShape(16.dp)
     val buttonSize = Modifier.height(96.dp).fillMaxWidth().padding(16.dp)
@@ -32,12 +32,14 @@ fun MainScreen(navigateToGame: () -> Unit) {
             Text(text = "Начать игру")
         }
         Button(
-            onClick = {  },
+            onClick = {
+                navigateToRecords.invoke()
+            },
             modifier = buttonSize,
             shape = buttonShape,
             colors = ButtonDefaults.buttonColors(Color.Gray)
         ) {
-            Text(text = "Настройки")
+            Text(text = "Рекорды")
         }
     }
 }

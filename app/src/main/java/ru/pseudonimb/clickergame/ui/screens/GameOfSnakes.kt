@@ -22,18 +22,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import ru.pseudonimb.clickergame.ui.data.GameData
 import ru.pseudonimb.clickergame.utils.DataStoreManager
 import ru.pseudonimb.clickergame.utils.SettingsData
 import java.util.*
-
-data class State(val food: Pair<Int, Int>, val snake: List<Pair<Int, Int>>)
-
-val highScore: MutableState<Int> = mutableIntStateOf(0)
-var score = 0
 
 class GameOfSnakes(
     private val scope: CoroutineScope,
@@ -41,9 +38,10 @@ class GameOfSnakes(
     val dataStoreManager: DataStoreManager
 ) {
     private val mutex = Mutex()
-    private val mutableState = MutableStateFlow(State(food = Pair(5, 5), snake = listOf(Pair(7, 7))))
-    val state: Flow<State> = mutableState
+    private val mutableGameData = MutableStateFlow(GameData(food = Pair(5, 5), snake = listOf(Pair(7, 7))))
+    val gameData: Flow<GameData> = mutableGameData
     val dialogState = mutableStateOf(false)
+    var snakeLength = SNAKE_SIZE
 
     var move = Pair(1, 0)
         set(value) {
@@ -56,14 +54,10 @@ class GameOfSnakes(
 
     init {
         scope.launch {
-
-            var snakeLength = 4
-            score = 0
-
             while (true) {
                 //Скорость змейки (чем ближе к нулю тем быстрее)
                 delay(200)
-                mutableState.update {
+                mutableGameData.update {
                     val newPosition = it.snake.first().let { position ->
                         mutex.withLock {
                             Pair(
@@ -76,24 +70,28 @@ class GameOfSnakes(
                     //Если змея съёла еду
                     if (newPosition == it.food) {
                         snakeLength++
-                        score++
                     }
 
                     //Если змея врезалась в себя
                     if (it.snake.contains(newPosition)) {
-                        if (dialogState.value == false) {
-                            if (snakeLength > 4) highScore.value = (snakeLength - 4)
+                        if (!dialogState.value) {
+                            val snakeHighScore = if (snakeLength > SNAKE_SIZE) {
+                                (snakeLength - SNAKE_SIZE)
+                            } else 0
 
-                            dataStoreManager.saveSettings(
-                                SettingsData(
-                                    highScore.value
+                            val dataStoreHighScore = dataStoreManager.getSettings().first().sharedHighScore
+
+                            if (snakeHighScore > dataStoreHighScore) {
+                                dataStoreManager.saveSettings(
+                                    SettingsData(
+                                        snakeHighScore
+                                    )
                                 )
-                            )
-
-                            snakeLength = 4
-                            score = 0
+                            }
                         }
                         dialogState.value = true
+
+                        snakeLength = SNAKE_SIZE
                     }
 
                     it.copy(
@@ -110,7 +108,7 @@ class GameOfSnakes(
 
     companion object {
         const val BOARD_SIZE = 16
-
+        const val SNAKE_SIZE = 4
     }
 }
 
@@ -120,14 +118,10 @@ fun Player(
     onClick: () -> Unit,
     game: GameOfSnakes
 ) {
-    val state = game.state.collectAsState(initial = null)
-    LaunchedEffect(key1 = true) {
-        game.dataStoreManager.getSettings().collect { settingsData ->
-            highScore.value = settingsData.sharedHighScore
-        }
-    }
+    val state = game.gameData.collectAsState(initial = null)
+    val dataState = game.dataStoreManager.getSettings().collectAsState(initial = SettingsData())
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
         Text(
             modifier = Modifier
                 .align(Alignment.End)
@@ -135,7 +129,7 @@ fun Player(
             color = Color.DarkGray,
             fontFamily = FontFamily.Monospace,
             fontSize = 24.sp,
-            text = "HIGHSCORE: " + highScore.value
+            text = "HIGHSCORE: " + dataState.value.sharedHighScore
         )
         Text(
             modifier = Modifier
@@ -144,7 +138,7 @@ fun Player(
             color = Color.DarkGray,
             fontFamily = FontFamily.Monospace,
             fontSize = 24.sp,
-            text = "SCORE: " + score
+            text = "SCORE: " + (game.snakeLength - 4)
         )
         state.value?.let {
             Board(it)
@@ -227,7 +221,7 @@ fun Buttons(onDirectionChange: (Pair<Int, Int>) -> Unit) {
 
 //Игровое поле
 @Composable
-fun Board(state: State) {
+fun Board(gameData: GameData) {
     BoxWithConstraints(Modifier.padding(16.dp)) {
         val tileSize = maxWidth / GameOfSnakes.BOARD_SIZE
 
@@ -241,7 +235,7 @@ fun Board(state: State) {
         //Еда
         Box(
             Modifier
-                .offset(x = tileSize * state.food.first, y = tileSize * state.food.second)
+                .offset(x = tileSize * gameData.food.first, y = tileSize * gameData.food.second)
                 .size(tileSize)
                 .background(
                     Color.Gray, CircleShape
@@ -249,7 +243,7 @@ fun Board(state: State) {
         )
 
         //Змея
-        state.snake.forEach {
+        gameData.snake.forEach {
             Box(
                 modifier = Modifier
                     .offset(x = tileSize * it.first, y = tileSize * it.second)
@@ -264,6 +258,8 @@ fun Board(state: State) {
 
 @Composable
 fun DialogCollision(dialogState: MutableState<Boolean>, navigateMainMenu: () -> Unit, game: GameOfSnakes) {
+    var finalHighScore =
+        game.dataStoreManager.getSettings().collectAsState(initial = SettingsData()).value.sharedHighScore
     AlertDialog(onDismissRequest = {
         dialogState.value = false
     }, confirmButton = {
@@ -280,7 +276,7 @@ fun DialogCollision(dialogState: MutableState<Boolean>, navigateMainMenu: () -> 
             Text(text = "Главное меню")
         }
     }, title = {
-        Text(text = "Игра окончена.\nВаш рекорд ${highScore.value} очков")
+        Text(text = "Игра окончена.\nВаш рекорд $finalHighScore очков")
     })
 
 }

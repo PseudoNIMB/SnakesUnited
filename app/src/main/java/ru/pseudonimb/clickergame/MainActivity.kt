@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import ru.pseudonimb.clickergame.ui.screens.GameOfSnakes
 import ru.pseudonimb.clickergame.ui.screens.MainScreen
 import ru.pseudonimb.clickergame.ui.screens.Player
+import ru.pseudonimb.clickergame.ui.screens.RecordsScreen
 import ru.pseudonimb.clickergame.ui.theme.ClickergameTheme
 import ru.pseudonimb.clickergame.utils.DataStoreManager
 
@@ -25,9 +26,10 @@ class MainActivity : ComponentActivity() {
                     startDestination = "main_screen"
                 ) {
                     composable("main_screen") {
-                        MainScreen {
-                            navController.navigate("game_screen")
-                        }
+                        MainScreen (
+                            { navController.navigate("game_screen") },
+                            { navController.navigate("records_screen") }
+                        )
                     }
                     composable("game_screen") {
                         Player(
@@ -50,6 +52,15 @@ class MainActivity : ComponentActivity() {
                                 dataStoreManager = dataStoreManager
                             )
                         )
+                    }
+                    composable("records_screen") {
+                        RecordsScreen {
+                            navController.navigate("main_screen"){
+                                popUpTo("main_screen") {
+                                    inclusive = true
+                                }
+                            }
+                        }
                     }
                 }
             }
