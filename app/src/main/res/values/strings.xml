@@ -11,6 +11,13 @@
     <string name="score_uppercase">"SCORE: "</string>
     <string name="try_again">Try again</string>
     <string name="main_menu">Main menu</string>
-    <string name="game_over">"Game over.\nYour best score is "</string>
+    <string name="game_over">"Game over."</string>
+    <string name="best_result_is">"Your best score is "</string>
     <string name="sign_in">Sign in</string>
+    <string name="if_you_want_to_see">If you want to
+        see your results at online leaderboard you NEED to register an account.
+    </string>
+    <string name="if_it_s_your_first_time">If it\'s your
+        first time, it will be registered automatically after click \'Sign In\' button.
+    </string>
 </resources>

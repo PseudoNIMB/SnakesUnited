@@ -292,6 +292,6 @@ fun DialogCollision(dialogState: MutableState<Boolean>, navigateMainMenu: () -> 
             Text(text = stringResource(id = R.string.main_menu))
         }
     }, title = {
-        Text(text = stringResource(id = R.string.game_over) + finalHighScore)
+        Text(text = stringResource(id = R.string.game_over) + "\n" + stringResource(id = R.string.best_result_is) + finalHighScore)
     })
 }

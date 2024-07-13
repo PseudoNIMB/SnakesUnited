@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,6 +85,8 @@ fun DialogAuth(dialogState: MutableState<Boolean>, navigateToRecords: () -> Unit
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Text(text = stringResource(R.string.if_you_want_to_see) + "\n" + stringResource(R.string.if_it_s_your_first_time), modifier = Modifier.padding(24.dp, 0.dp), color = Color.White)
+            Spacer(modifier = Modifier.height(8.dp))
             TextField(value = username.value, label = {Text(text = stringResource(id = R.string.username))}, onValueChange = {
                 username.value = it
             })
