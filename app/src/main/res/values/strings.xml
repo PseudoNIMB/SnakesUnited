@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Snakes United</string>
+    <string name="new_game">New Game</string>
+    <string name="leaderboards">Leaderboards</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
+    <string name="take_a_look">Take a look</string>
+    <string name="online_leaderboard_title">Online leaderboard:</string>
+    <string name="hello_word">Hello</string>
+    <string name="highscore_uppercase">"HIGHSCORE: "</string>
+    <string name="score_uppercase">"SCORE: "</string>
+    <string name="try_again">Try again</string>
+    <string name="main_menu">Main menu</string>
+    <string name="game_over">"Game over.\nYour best score is "</string>
+    <string name="sign_in">Sign in</string>
 </resources>

@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import ru.pseudonimb.snakesunited.R
 import ru.pseudonimb.snakesunited.ui.data.GameData
 import ru.pseudonimb.snakesunited.ui.data.RecordData
 import ru.pseudonimb.snakesunited.utils.DataStoreManager
@@ -91,13 +93,15 @@ class GameOfSnakes(
                                         snakeHighScore
                                     )
                                 )
-                                fbs.collection("Records")
-                                    .document(auth.currentUser?.email?.substringBefore("@").toString()).set(
-                                        RecordData(
-                                            auth.currentUser?.email?.substringBefore("@").toString(),
-                                            snakeHighScore
+                                if (auth.currentUser != null) {
+                                    fbs.collection("Records")
+                                        .document(auth.currentUser?.email?.substringBefore("@").toString()).set(
+                                            RecordData(
+                                                auth.currentUser?.email?.substringBefore("@").toString(),
+                                                snakeHighScore
+                                            )
                                         )
-                                    )
+                                }
                             }
                         }
                         dialogState.value = true
@@ -140,7 +144,7 @@ fun Player(
             color = Color.DarkGray,
             fontFamily = FontFamily.Monospace,
             fontSize = 24.sp,
-            text = "HIGHSCORE: " + dataState.value.sharedHighScore
+            text = stringResource(id = R.string.highscore_uppercase) + dataState.value.sharedHighScore
         )
         Text(
             modifier = Modifier
@@ -149,7 +153,7 @@ fun Player(
             color = Color.DarkGray,
             fontFamily = FontFamily.Monospace,
             fontSize = 24.sp,
-            text = "SCORE: " + (game.snakeLength - 4)
+            text = stringResource(id = R.string.score_uppercase) + (game.snakeLength - 4)
         )
         state.value?.let {
             Board(it)
@@ -278,16 +282,16 @@ fun DialogCollision(dialogState: MutableState<Boolean>, navigateMainMenu: () -> 
         TextButton(onClick = {
             dialogState.value = false
         }) {
-            Text(text = "Try again")
+            Text(text = stringResource(id = R.string.try_again))
         }
     }, dismissButton = {
         TextButton(onClick = {
             dialogState.value = false
             navigateMainMenu.invoke()
         }) {
-            Text(text = "Main menu")
+            Text(text = stringResource(id = R.string.main_menu))
         }
     }, title = {
-        Text(text = "Game over.\nYour best score is $finalHighScore")
+        Text(text = stringResource(id = R.string.game_over) + finalHighScore)
     })
 }

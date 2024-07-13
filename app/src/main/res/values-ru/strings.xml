@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="new_game">Начать игру</string>
+    <string name="leaderboards">Рекорды</string>
+    <string name="username">имя пользователя</string>
+    <string name="password">пароль</string>
+    <string name="take_a_look">Просто посмотреть</string>
+    <string name="online_leaderboard_title">Таблица рекордов:</string>
+    <string name="hello_word">Привет</string>
+    <string name="highscore_uppercase">"РЕКОРД: "</string>
+    <string name="score_uppercase">"ОЧКИ: "</string>
+    <string name="try_again">Попробовать ещё раз</string>
+    <string name="main_menu">Назад</string>
+    <string name="game_over">"Игра окончена.\\nТвой лучший результат "</string>
+    <string name="app_name">Snakes United</string>
+    <string name="sign_in">Войти</string>
+</resources>

@@ -14,11 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import ru.pseudonimb.snakesunited.R
 import ru.pseudonimb.snakesunited.ui.data.RecordData
 
 @Composable
@@ -31,7 +33,7 @@ fun RecordsScreen(navigateToMainMenu: () -> Unit) {
     val fbs = Firebase.firestore
 
     LaunchedEffect(Unit) {
-        Toast.makeText(context, "Hello, $localUsername", Toast.LENGTH_SHORT).show()
+        if (auth.currentUser != null) Toast.makeText(context, context.getString(R.string.hello_word) + ", $localUsername", Toast.LENGTH_SHORT).show()
         fbs.collection("Records").get().addOnCompleteListener {
             if (it.isSuccessful) {
                 listOfRecords.value = it.result.toObjects(RecordData::class.java)
@@ -54,7 +56,7 @@ fun RecordsScreen(navigateToMainMenu: () -> Unit) {
             color = Color.DarkGray,
             fontFamily = FontFamily.Monospace,
             fontSize = 24.sp,
-            text = "Online leaderboard:"
+            text = stringResource(id = R.string.online_leaderboard_title)
         )
         LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally,

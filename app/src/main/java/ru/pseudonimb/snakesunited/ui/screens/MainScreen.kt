@@ -1,7 +1,6 @@
 package ru.pseudonimb.snakesunited.ui.screens
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -11,12 +10,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import ru.pseudonimb.snakesunited.R
 
 val auth = Firebase.auth
 val authDialogState = mutableStateOf(false)
@@ -44,7 +45,7 @@ fun MainScreen(navigateToGame: () -> Unit, navigateToRecords: () -> Unit) {
             colors = ButtonDefaults.outlinedButtonColors(),
             shape = buttonShape
         ) {
-            Text(text = "New game", fontSize = 16.sp)
+            Text(text = stringResource(id = R.string.new_game), fontSize = 16.sp)
         }
 
         if (authDialogState.value) {
@@ -62,7 +63,7 @@ fun MainScreen(navigateToGame: () -> Unit, navigateToRecords: () -> Unit) {
             modifier = buttonSize,
             shape = buttonShape
         ) {
-            Text(text = "Leaderboards", fontSize = 16.sp)
+            Text(text = stringResource(id = R.string.leaderboards), fontSize = 16.sp)
         }
     }
 }
@@ -83,11 +84,11 @@ fun DialogAuth(dialogState: MutableState<Boolean>, navigateToRecords: () -> Unit
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TextField(value = username.value, label = {Text(text = "username")}, onValueChange = {
+            TextField(value = username.value, label = {Text(text = stringResource(id = R.string.username))}, onValueChange = {
                 username.value = it
             })
             Spacer(modifier = Modifier.height(8.dp))
-            TextField(value = password.value, label = {Text(text = "password")}, onValueChange = {
+            TextField(value = password.value, label = {Text(text = stringResource(id = R.string.password))}, onValueChange = {
                 password.value = it
             })
             Spacer(modifier = Modifier.height(8.dp))
@@ -96,14 +97,14 @@ fun DialogAuth(dialogState: MutableState<Boolean>, navigateToRecords: () -> Unit
                     signIn(auth, username.value, password.value, navigateToRecords)
                     authDialogState.value = false
                 }) {
-                    Text(text = "Sign In")
+                    Text(text = stringResource(id = R.string.sign_in))
                 }
                 Spacer(modifier = Modifier.width(24.dp))
                 OutlinedButton(onClick = {
                     navigateToRecords.invoke()
                     authDialogState.value = false
                 }) {
-                    Text(text = "Take a look")
+                    Text(text = stringResource(id = R.string.take_a_look))
                 }
             }
         }
