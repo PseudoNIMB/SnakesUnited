@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "594491957607",
+    "project_id": "snakesunited-14640",
+    "storage_bucket": "snakesunited-14640.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:594491957607:android:dfd3dbbd5121c4ed34cfc2",
+        "android_client_info": {
+          "package_name": "ru.pseudonimb.snakesunited"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsr6votbyMa9vjqis7voA0yYIMehxl9iQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

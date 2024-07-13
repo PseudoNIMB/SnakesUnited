@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.pseudonimb.snakesunited.ui.data.GameData
+import ru.pseudonimb.snakesunited.ui.data.RecordData
 import ru.pseudonimb.snakesunited.utils.DataStoreManager
 import ru.pseudonimb.snakesunited.utils.SettingsData
 import java.util.*
@@ -42,6 +45,7 @@ class GameOfSnakes(
     val gameData: Flow<GameData> = mutableGameData
     val dialogState = mutableStateOf(false)
     var snakeLength = SNAKE_SIZE
+    val fbs = Firebase.firestore
 
     var move = Pair(1, 0)
         set(value) {
@@ -87,6 +91,13 @@ class GameOfSnakes(
                                         snakeHighScore
                                     )
                                 )
+                                fbs.collection("Records")
+                                    .document(auth.currentUser?.email?.substringBefore("@").toString()).set(
+                                        RecordData(
+                                            auth.currentUser?.email?.substringBefore("@").toString(),
+                                            snakeHighScore
+                                        )
+                                    )
                             }
                         }
                         dialogState.value = true
@@ -279,5 +290,4 @@ fun DialogCollision(dialogState: MutableState<Boolean>, navigateMainMenu: () -> 
     }, title = {
         Text(text = "Game over.\nYour best score is $finalHighScore")
     })
-
 }
