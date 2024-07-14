@@ -85,6 +85,7 @@ fun DialogAuth(dialogState: MutableState<Boolean>, navigateToRecords: () -> Unit
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            //TODO Этот текст сдвигает клавиатуру -_- также необходимо пароль отображать ещё раз, с понтом "сохраните его чтобы продолжить игру на других устройствах, и увидите вы его только единожды"
             Text(text = stringResource(R.string.if_you_want_to_see) + "\n" + stringResource(R.string.if_it_s_your_first_time), modifier = Modifier.padding(24.dp, 0.dp), color = Color.White)
             Spacer(modifier = Modifier.height(8.dp))
             TextField(value = username.value, label = {Text(text = stringResource(id = R.string.username))}, onValueChange = {

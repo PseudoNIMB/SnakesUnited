@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Snakes United</string>
+    <string name="app_name" translatable="false">Snakes United</string>
     <string name="new_game">New Game</string>
     <string name="leaderboards">Leaderboards</string>
     <string name="username">username</string>
