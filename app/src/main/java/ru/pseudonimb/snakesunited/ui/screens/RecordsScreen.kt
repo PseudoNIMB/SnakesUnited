@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -33,7 +34,6 @@ fun RecordsScreen(navigateToMainMenu: () -> Unit) {
     val fbs = Firebase.firestore
 
     LaunchedEffect(Unit) {
-        if (auth.currentUser != null) Toast.makeText(context, context.getString(R.string.hello_word) + ", $localUsername", Toast.LENGTH_SHORT).show()
         fbs.collection("Records").get().addOnCompleteListener {
             if (it.isSuccessful) {
                 listOfRecords.value = it.result.toObjects(RecordData::class.java)
@@ -65,7 +65,7 @@ fun RecordsScreen(navigateToMainMenu: () -> Unit) {
                 .padding(0.dp, 16.dp)
                 .fillMaxSize()
         ) {
-            items(listOfRecords.value.sortedByDescending { it.highestScore }) { records ->
+            itemsIndexed(listOfRecords.value.sortedByDescending { it.highestScore }) { index, records ->
                 OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -76,8 +76,11 @@ fun RecordsScreen(navigateToMainMenu: () -> Unit) {
                             .fillMaxWidth()
                             .wrapContentWidth()
                             .padding(16.dp),
-                        text = records.username.toUpperCase() + " " + records.highestScore
+                        text = (index+1).toString() + " " + records.username.toUpperCase() + " " + records.highestScore
                     )
+                    if (records.username.contains(localUsername.toString())){
+                        if (auth.currentUser != null) Toast.makeText(context, context.getString(R.string.hello_word) + ", $localUsername," + context.getString(R.string.you_got) + (index+1).toString() + context.getString(R.string.place), Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

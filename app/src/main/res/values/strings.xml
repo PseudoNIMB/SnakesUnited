@@ -20,4 +20,6 @@
     <string name="if_it_s_your_first_time">If it\'s your
         first time, it will be registered automatically after click \'Sign In\' button.
     </string>
+    <string name="you_got">" you got "</string>
+    <string name="place">" place"</string>
 </resources>

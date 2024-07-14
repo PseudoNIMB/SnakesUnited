@@ -20,4 +20,6 @@
     <string name="if_it_s_your_first_time">Если Вы делаете это впервые, аккаунт будет создан автоматически при вводе
         логина и пароля.
     </string>
+    <string name="you_got">" у тебя "</string>
+    <string name="place">" место в рейтинге"</string>
 </resources>
