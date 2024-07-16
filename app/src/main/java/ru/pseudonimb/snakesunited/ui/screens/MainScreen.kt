@@ -3,12 +3,15 @@ package ru.pseudonimb.snakesunited.ui.screens
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -82,11 +85,11 @@ fun DialogAuth(dialogState: MutableState<Boolean>, navigateToRecords: () -> Unit
         dialogState.value = false
     }) {
         Column (
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(0.dp, 120.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
-            //TODO Этот текст сдвигает клавиатуру -_- также необходимо пароль отображать ещё раз, с понтом "сохраните его чтобы продолжить игру на других устройствах, и увидите вы его только единожды"
+            //TODO Необходимо пароль отображать ещё раз, с понтом "сохраните его чтобы продолжить игру на других устройствах, и увидите вы его только единожды"
             Text(text = stringResource(R.string.if_you_want_to_see) + "\n" + stringResource(R.string.if_it_s_your_first_time), modifier = Modifier.padding(24.dp, 0.dp), color = Color.White)
             Spacer(modifier = Modifier.height(8.dp))
             TextField(value = username.value, singleLine = true, label = {Text(text = stringResource(id = R.string.username))}, onValueChange = {

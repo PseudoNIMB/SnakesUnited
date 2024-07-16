@@ -21,8 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.flow.first
 import ru.pseudonimb.snakesunited.R
 import ru.pseudonimb.snakesunited.ui.data.RecordData
+import ru.pseudonimb.snakesunited.utils.DataStoreManager
 
 @Composable
 fun RecordsScreen(navigateToMainMenu: () -> Unit) {
@@ -76,10 +78,16 @@ fun RecordsScreen(navigateToMainMenu: () -> Unit) {
                             .fillMaxWidth()
                             .wrapContentWidth()
                             .padding(16.dp),
-                        text = (index+1).toString() + " " + records.username.toUpperCase() + " " + records.highestScore
+                        text = (index + 1).toString() + " " + records.username.toUpperCase() + " " + records.highestScore
                     )
-                    if (records.username.contains(localUsername.toString())){
-                        if (auth.currentUser != null) Toast.makeText(context, context.getString(R.string.hello_word) + ", $localUsername," + context.getString(R.string.you_got) + (index+1).toString() + context.getString(R.string.place), Toast.LENGTH_SHORT).show()
+                    if (records.username.contains(localUsername.toString())) {
+                        if (auth.currentUser != null) Toast.makeText(
+                            context,
+                            context.getString(R.string.hello_word) + ", $localUsername," + context.getString(R.string.you_got) + (index + 1).toString() + context.getString(
+                                R.string.place
+                            ),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }

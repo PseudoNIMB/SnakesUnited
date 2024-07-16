@@ -60,9 +60,21 @@ class GameOfSnakes(
 
     init {
         scope.launch {
+            var intStarted = 0
             while (true) {
+                //Перезапись облачного хайскора в локальный датастор после логина
+                if (auth.currentUser != null){
+                    fbs.collection("Records").document(auth.currentUser?.email?.substringBefore("@").toString()).get().addOnCompleteListener{
+                        val startedHighScore = it.result.data?.values?.first().toString()
+                        intStarted = Integer.valueOf(startedHighScore)
+                    }
+                }
+
                 //Скорость змейки (чем ближе к нулю тем быстрее)
                 delay(200)
+
+                dataStoreManager.saveSettings(SettingsData(intStarted))
+
                 mutableGameData.update {
                     val newPosition = it.snake.first().let { position ->
                         mutex.withLock {
@@ -136,7 +148,9 @@ fun Player(
     val state = game.gameData.collectAsState(initial = null)
     val dataState = game.dataStoreManager.getSettings().collectAsState(initial = SettingsData())
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom, modifier = Modifier.padding(0.dp, 16.dp).fillMaxSize()) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom, modifier = Modifier
+        .padding(0.dp, 16.dp)
+        .fillMaxSize()) {
         Text(
             modifier = Modifier
                 .align(Alignment.End)
