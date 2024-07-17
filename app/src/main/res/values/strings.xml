@@ -22,4 +22,6 @@
     </string>
     <string name="you_got">" you got "</string>
     <string name="place">" place"</string>
+    <string name="must_have_at_least_3_symbols">Must have at least 3 symbols</string>
+    <string name="must_have_at_least_8_symbols">Must have at least 8 numbers</string>
 </resources>

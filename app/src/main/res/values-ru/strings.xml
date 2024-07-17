@@ -22,4 +22,6 @@
     </string>
     <string name="you_got">" у тебя "</string>
     <string name="place">" место в рейтинге"</string>
+    <string name="must_have_at_least_3_symbols">Не менее 3 символов</string>
+    <string name="must_have_at_least_8_symbols">Не менее 8 цифр</string>
 </resources>

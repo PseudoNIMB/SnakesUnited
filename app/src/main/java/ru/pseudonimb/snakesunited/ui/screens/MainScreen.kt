@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,27 +83,87 @@ fun DialogAuth(dialogState: MutableState<Boolean>, navigateToRecords: () -> Unit
     val password = remember {
         mutableStateOf("")
     }
+    var loginError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
     Dialog(onDismissRequest = {
         dialogState.value = false
     }) {
         Column (
-            modifier = Modifier.fillMaxSize().padding(0.dp, 120.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(0.dp, 120.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
             //TODO Необходимо пароль отображать ещё раз, с понтом "сохраните его чтобы продолжить игру на других устройствах, и увидите вы его только единожды"
             Text(text = stringResource(R.string.if_you_want_to_see) + "\n" + stringResource(R.string.if_it_s_your_first_time), modifier = Modifier.padding(24.dp, 0.dp), color = Color.White)
             Spacer(modifier = Modifier.height(8.dp))
-            TextField(value = username.value, singleLine = true, label = {Text(text = stringResource(id = R.string.username))}, onValueChange = {
-                username.value = it
-            })
+            OutlinedTextField(
+                value = username.value,
+                singleLine = true,
+                label = { Text(text = stringResource(id = R.string.username)) },
+                onValueChange = {
+                    username.value = it
+                    if (loginError) {
+                        errorMessage = ""
+                        loginError = false
+                    }
+                },
+                isError = loginError,
+                supportingText = {
+                    if (loginError) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = stringResource(R.string.must_have_at_least_3_symbols),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            )
             Spacer(modifier = Modifier.height(8.dp))
-            TextField(value = password.value, singleLine = true, label = {Text(text = stringResource(id = R.string.password))}, onValueChange = {
-                password.value = it
-            })
+            OutlinedTextField(
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.None,
+                    autoCorrect = true,
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                value = password.value,
+                singleLine = true,
+                label = { Text(text = stringResource(id = R.string.password)) },
+                onValueChange = {
+                    password.value = it.filter { it.isDigit() }.ifBlank { "" }
+                    if (passwordError) {
+                        errorMessage = ""
+                        passwordError = false
+                    }
+                },
+                isError = passwordError,
+                supportingText = {
+                    if (passwordError) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = stringResource(R.string.must_have_at_least_8_symbols),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            )
             Spacer(modifier = Modifier.height(8.dp))
             Row {
                 OutlinedButton(onClick = {
+                    if (username.value.length < 3) {
+                        errorMessage = "Must have at least 3 symbols"
+                        loginError = true
+                        return@OutlinedButton
+                    }
+                    if (password.value.length < 8) {
+                        errorMessage = "Must have at least 8 symbols"
+                        passwordError = true
+                        return@OutlinedButton
+                    }
                     signIn(auth, username.value, password.value, navigateToRecords)
                     authDialogState.value = false
                 }) {
