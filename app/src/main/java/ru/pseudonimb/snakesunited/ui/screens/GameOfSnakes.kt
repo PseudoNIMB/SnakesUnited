@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,13 +68,12 @@ class GameOfSnakes(
                     fbs.collection("Records").document(auth.currentUser?.email?.substringBefore("@").toString()).get().addOnCompleteListener{
                         val startedHighScore = it.result.data?.values?.first().toString()+""
                         intStarted = startedHighScore.toInt()
+                        scope.launch { dataStoreManager.saveSettings(SettingsData(intStarted)) }
                     }
                 }
 
                 //Скорость змейки (чем ближе к нулю тем быстрее)
                 delay(200)
-
-                dataStoreManager.saveSettings(SettingsData(intStarted))
 
                 mutableGameData.update {
                     val newPosition = it.snake.first().let { position ->
@@ -94,19 +92,14 @@ class GameOfSnakes(
 
                     //Если змея врезалась в себя
                     if (it.snake.contains(newPosition)) {
+                        val dataStoreHighScore = dataStoreManager.getSettings().first().sharedHighScore
                         if (!dialogState.value) {
                             val snakeHighScore = if (snakeLength > SNAKE_SIZE) {
                                 (snakeLength - SNAKE_SIZE)
                             } else 0
 
-                            val dataStoreHighScore = dataStoreManager.getSettings().first().sharedHighScore
-
                             if (snakeHighScore > dataStoreHighScore) {
-                                dataStoreManager.saveSettings(
-                                    SettingsData(
-                                        snakeHighScore
-                                    )
-                                )
+                                dataStoreManager.saveSettings(SettingsData(snakeHighScore))
                                 if (auth.currentUser != null) {
                                     fbs.collection("Records")
                                         .document(auth.currentUser?.email?.substringBefore("@").toString()).set(
@@ -290,8 +283,7 @@ fun Board(gameData: GameData) {
 
 @Composable
 fun DialogCollision(dialogState: MutableState<Boolean>, navigateMainMenu: () -> Unit, game: GameOfSnakes) {
-    var finalHighScore =
-        game.dataStoreManager.getSettings().collectAsState(initial = SettingsData()).value.sharedHighScore
+    val localDataState = game.dataStoreManager.getSettings().collectAsState(initial = SettingsData())
     AlertDialog(onDismissRequest = {
         dialogState.value = false
     }, confirmButton = {
@@ -308,6 +300,6 @@ fun DialogCollision(dialogState: MutableState<Boolean>, navigateMainMenu: () -> 
             Text(text = stringResource(id = R.string.main_menu))
         }
     }, title = {
-        Text(text = stringResource(id = R.string.game_over) + "\n" + stringResource(id = R.string.best_result_is) + finalHighScore)
+        Text(text = stringResource(id = R.string.game_over) + "\n" + stringResource(id = R.string.best_result_is) + localDataState.value.sharedHighScore)
     })
 }
