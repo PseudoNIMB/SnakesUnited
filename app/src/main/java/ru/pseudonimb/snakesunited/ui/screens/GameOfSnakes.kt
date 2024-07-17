@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,12 +62,13 @@ class GameOfSnakes(
     init {
         scope.launch {
             var intStarted = 0
+
             while (true) {
                 //Перезапись облачного хайскора в локальный датастор после логина
                 if (auth.currentUser != null){
                     fbs.collection("Records").document(auth.currentUser?.email?.substringBefore("@").toString()).get().addOnCompleteListener{
-                        val startedHighScore = it.result.data?.values?.first().toString()
-                        intStarted = Integer.valueOf(startedHighScore)
+                        val startedHighScore = it.result.data?.values?.first().toString()+""
+                        intStarted = startedHighScore.toInt()
                     }
                 }
 
