@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,9 +34,11 @@ import kotlinx.coroutines.sync.withLock
 import ru.pseudonimb.snakesunited.R
 import ru.pseudonimb.snakesunited.ui.data.GameData
 import ru.pseudonimb.snakesunited.ui.data.RecordData
+import ru.pseudonimb.snakesunited.ui.theme.MainTheme
 import ru.pseudonimb.snakesunited.utils.DataStoreManager
 import ru.pseudonimb.snakesunited.utils.SettingsData
 import java.util.*
+
 
 class GameOfSnakes(
     private val scope: CoroutineScope,
@@ -64,12 +67,13 @@ class GameOfSnakes(
 
             while (true) {
                 //Перезапись облачного хайскора в локальный датастор после логина
-                if (auth.currentUser != null){
-                    fbs.collection("Records").document(auth.currentUser?.email?.substringBefore("@").toString()).get().addOnCompleteListener{
-                        val startedHighScore = it.result.data?.values?.first().toString()+""
-                        intStarted = startedHighScore.toInt()
-                        scope.launch { dataStoreManager.saveSettings(SettingsData(intStarted)) }
-                    }
+                if (auth.currentUser != null) {
+                    fbs.collection("Records").document(auth.currentUser?.email?.substringBefore("@").toString()).get()
+                        .addOnCompleteListener {
+                            val startedHighScore = it.result.data?.values?.first().toString() + ""
+                            intStarted = startedHighScore.toInt()
+                            scope.launch { dataStoreManager.saveSettings(SettingsData(intStarted)) }
+                        }
                 }
 
                 //Скорость змейки (чем ближе к нулю тем быстрее)
@@ -140,105 +144,120 @@ fun Player(
     onClick: () -> Unit,
     game: GameOfSnakes
 ) {
-    val state = game.gameData.collectAsState(initial = null)
-    val dataState = game.dataStoreManager.getSettings().collectAsState(initial = SettingsData())
+    MainTheme {
+        val state = game.gameData.collectAsState(initial = null)
+        val dataState = game.dataStoreManager.getSettings().collectAsState(initial = SettingsData())
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom, modifier = Modifier
-        .padding(0.dp, 16.dp)
-        .fillMaxSize()) {
-        Text(
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom,
             modifier = Modifier
-                .align(Alignment.End)
-                .padding(horizontal = 40.dp),
-            color = Color.DarkGray,
-            fontFamily = FontFamily.Monospace,
-            fontSize = 24.sp,
-            text = stringResource(id = R.string.highscore_uppercase) + dataState.value.sharedHighScore
-        )
-        Text(
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(horizontal = 40.dp),
-            color = Color.DarkGray,
-            fontFamily = FontFamily.Monospace,
-            fontSize = 24.sp,
-            text = stringResource(id = R.string.score_uppercase) + (game.snakeLength - 4)
-        )
-        state.value?.let {
-            Board(it)
-        }
-        if (game.dialogState.value) {
-            DialogCollision(game.dialogState, game.navigateMainMenu, game)
-        }
-        Buttons {
-            game.move = it
+                .padding(0.dp, 16.dp)
+                .fillMaxSize()
+        ) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(horizontal = 40.dp),
+                color = colorScheme.secondary,
+                fontFamily = FontFamily.Monospace,
+                fontSize = 24.sp,
+                text = stringResource(id = R.string.highscore_uppercase) + dataState.value.sharedHighScore
+            )
+            Text(
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(horizontal = 40.dp),
+                color = colorScheme.secondary,
+                fontFamily = FontFamily.Monospace,
+                fontSize = 24.sp,
+                text = stringResource(id = R.string.score_uppercase) + (game.snakeLength - 4)
+            )
+            state.value?.let {
+                Board(it)
+            }
+            if (game.dialogState.value) {
+                DialogCollision(game.dialogState, game.navigateMainMenu, game)
+            }
+            Buttons {
+                game.move = it
+            }
         }
     }
-
 }
 
 //Кнопки управления
 @Composable
 fun Buttons(onDirectionChange: (Pair<Int, Int>) -> Unit) {
-    val buttonSize = Modifier.size(96.dp)
-    val buttonShape = RoundedCornerShape(16.dp)
+    MainTheme {
+        val buttonSize = Modifier.size(96.dp)
+        val buttonShape = RoundedCornerShape(16.dp)
 
-    //Булеан для отключения кнопок текущего и реверсивного направления, чтобы не дать змее жрать себя
-    var movement by remember {
-        mutableStateOf(false)
-    }
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
-        OutlinedButton(
-            onClick = {
-                onDirectionChange(Pair(0, -1))
-                movement = true
-            },
-            enabled = !movement,
-            modifier = buttonSize,
-            shape = buttonShape
-        ) {
-            Icon(Icons.Default.KeyboardArrowUp, "Up",
-                modifier = Modifier.size(32.dp))
+        //Булеан для отключения кнопок текущего и реверсивного направления, чтобы не дать змее жрать себя
+        var movement by remember {
+            mutableStateOf(false)
         }
-        Row {
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
             OutlinedButton(
                 onClick = {
-                    onDirectionChange(Pair(-1, 0))
-                    movement = false
+                    onDirectionChange(Pair(0, -1))
+                    movement = true
                 },
-                enabled = movement,
+                enabled = !movement,
                 modifier = buttonSize,
                 shape = buttonShape
             ) {
-                Icon(Icons.Default.KeyboardArrowLeft, "Left",
-                    modifier = Modifier.size(32.dp))
+                Icon(
+                    Icons.Default.KeyboardArrowUp, "Up",
+                    modifier = Modifier.size(32.dp)
+                )
             }
-            Spacer(modifier = buttonSize)
+            Row {
+                OutlinedButton(
+                    onClick = {
+                        onDirectionChange(Pair(-1, 0))
+                        movement = false
+                    },
+                    enabled = movement,
+                    modifier = buttonSize,
+                    shape = buttonShape
+                ) {
+                    Icon(
+                        Icons.Default.KeyboardArrowLeft, "Left",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                Spacer(modifier = buttonSize)
+                OutlinedButton(
+                    onClick = {
+                        onDirectionChange(Pair(1, 0))
+                        movement = false
+                    },
+                    enabled = movement,
+                    modifier = buttonSize,
+                    shape = buttonShape
+                ) {
+                    Icon(
+                        Icons.Default.KeyboardArrowRight, "Right",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
             OutlinedButton(
                 onClick = {
-                    onDirectionChange(Pair(1, 0))
-                    movement = false
+                    onDirectionChange(Pair(0, 1))
+                    movement = true
                 },
-                enabled = movement,
+                enabled = !movement,
                 modifier = buttonSize,
                 shape = buttonShape
             ) {
-                Icon(Icons.Default.KeyboardArrowRight, "Right",
-                    modifier = Modifier.size(32.dp))
+                Icon(
+                    Icons.Default.KeyboardArrowDown, "Down",
+                    modifier = Modifier.size(32.dp)
+                )
             }
-        }
-        OutlinedButton(
-            onClick = {
-                onDirectionChange(Pair(0, 1))
-                movement = true
-            },
-            enabled = !movement,
-            modifier = buttonSize,
-            shape = buttonShape
-        ) {
-            Icon(Icons.Default.KeyboardArrowDown, "Down",
-                modifier = Modifier.size(32.dp))
         }
     }
 }
@@ -246,60 +265,64 @@ fun Buttons(onDirectionChange: (Pair<Int, Int>) -> Unit) {
 //Игровое поле
 @Composable
 fun Board(gameData: GameData) {
-    BoxWithConstraints(Modifier.padding(20.dp)) {
-        val tileSize = maxWidth / GameOfSnakes.BOARD_SIZE
+    MainTheme {
+        BoxWithConstraints(Modifier.padding(20.dp)) {
+            val tileSize = maxWidth / GameOfSnakes.BOARD_SIZE
 
-        //Граница игрового поля
-        Box(
-            Modifier
-                .size(maxWidth)
-                .border(2.dp, Color.DarkGray)
-        )
-
-        //Еда
-        Box(
-            Modifier
-                .offset(x = tileSize * gameData.food.first, y = tileSize * gameData.food.second)
-                .size(tileSize)
-                .background(
-                    Color.Gray, CircleShape
-                )
-        )
-
-        //Змея
-        gameData.snake.forEach {
+            //Граница игрового поля
             Box(
-                modifier = Modifier
-                    .padding(1.dp)
-                    .offset(x = tileSize * it.first, y = tileSize * it.second)
-                    .size(tileSize * 0.9f)
+                Modifier
+                    .size(maxWidth)
+                    .border(2.dp, colorScheme.primary)
+            )
+
+            //Еда
+            Box(
+                Modifier
+                    .offset(x = tileSize * gameData.food.first, y = tileSize * gameData.food.second)
+                    .size(tileSize)
                     .background(
-                        Color.DarkGray, shape = RoundedCornerShape(16)
+                        Color.Gray, CircleShape
                     )
             )
+
+            //Змея
+            gameData.snake.forEach {
+                Box(
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .offset(x = tileSize * it.first, y = tileSize * it.second)
+                        .size(tileSize * 0.9f)
+                        .background(
+                            Color.DarkGray, shape = RoundedCornerShape(16)
+                        )
+                )
+            }
         }
     }
 }
 
 @Composable
 fun DialogCollision(dialogState: MutableState<Boolean>, navigateMainMenu: () -> Unit, game: GameOfSnakes) {
-    val localDataState = game.dataStoreManager.getSettings().collectAsState(initial = SettingsData())
-    AlertDialog(onDismissRequest = {
-        dialogState.value = false
-    }, confirmButton = {
-        TextButton(onClick = {
+    MainTheme {
+        val localDataState = game.dataStoreManager.getSettings().collectAsState(initial = SettingsData())
+        AlertDialog(onDismissRequest = {
             dialogState.value = false
-        }) {
-            Text(text = stringResource(id = R.string.try_again))
-        }
-    }, dismissButton = {
-        TextButton(onClick = {
-            dialogState.value = false
-            navigateMainMenu.invoke()
-        }) {
-            Text(text = stringResource(id = R.string.main_menu))
-        }
-    }, title = {
-        Text(text = stringResource(id = R.string.game_over) + "\n" + stringResource(id = R.string.best_result_is) + localDataState.value.sharedHighScore)
-    })
+        }, confirmButton = {
+            TextButton(onClick = {
+                dialogState.value = false
+            }) {
+                Text(text = stringResource(id = R.string.try_again), color = colorScheme.secondary)
+            }
+        }, dismissButton = {
+            TextButton(onClick = {
+                dialogState.value = false
+                navigateMainMenu.invoke()
+            }) {
+                Text(text = stringResource(id = R.string.main_menu), color = colorScheme.secondary)
+            }
+        }, title = {
+            Text(text = stringResource(id = R.string.game_over) + "\n" + stringResource(id = R.string.best_result_is) + localDataState.value.sharedHighScore, color = colorScheme.secondary)
+        })
+    }
 }
