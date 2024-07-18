@@ -36,55 +36,64 @@ val authDialogState = mutableStateOf(false)
 @Composable
 fun MainScreen(navigateToGame: () -> Unit, navigateToRecords: () -> Unit) {
     MainTheme {
-        val buttonShape = RoundedCornerShape(16.dp)
-        val buttonSize = Modifier
-            .height(96.dp)
-            .fillMaxWidth()
-            .padding(16.dp)
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom,
-            modifier = Modifier
-                .padding(24.dp)
-                .fillMaxSize()
-        ) {
-            OutlinedButton(
-                onClick = {
-                    navigateToGame.invoke()
-                },
-                modifier = buttonSize,
-                colors = ButtonDefaults.outlinedButtonColors(),
-                shape = buttonShape
+        Surface(color = colorScheme.surfaceVariant) {
+            val buttonShape = RoundedCornerShape(16.dp)
+            val buttonSize = Modifier
+                .height(96.dp)
+                .fillMaxWidth()
+                .padding(16.dp)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom,
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxSize()
             ) {
-                Text(
-                    text = stringResource(id = R.string.new_game),
-                    fontFamily = AppTypography.titleLarge.fontFamily,
-                    fontSize = AppTypography.titleLarge.fontSize,
-                    color = colorScheme.secondary
-                )
-            }
+                OutlinedButton(
+                    onClick = {
+                        navigateToGame.invoke()
+                    },
+                    modifier = buttonSize,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = colorScheme.secondaryContainer,
+                        contentColor = colorScheme.primary
+                    ),
+                    shape = buttonShape
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.new_game),
+                        fontFamily = AppTypography.titleLarge.fontFamily,
+                        fontSize = AppTypography.titleLarge.fontSize,
+                        color = colorScheme.primary
+                    )
+                }
 
-            if (authDialogState.value) {
-                DialogAuth(dialogState = authDialogState, navigateToRecords = navigateToRecords)
-            }
+                if (authDialogState.value) {
+                    DialogAuth(dialogState = authDialogState, navigateToRecords = navigateToRecords)
+                }
 
-            OutlinedButton(
-                onClick = {
-                    if (auth.currentUser != null) {
-                        navigateToRecords.invoke()
-                    } else {
-                        authDialogState.value = true
-                    }
-                },
-                modifier = buttonSize,
-                shape = buttonShape
-            ) {
-                Text(
-                    text = stringResource(id = R.string.leaderboards),
-                    fontFamily = AppTypography.titleLarge.fontFamily,
-                    fontSize = AppTypography.titleLarge.fontSize,
-                    color = colorScheme.secondary
-                )
+                OutlinedButton(
+                    onClick = {
+                        if (auth.currentUser != null) {
+                            navigateToRecords.invoke()
+                        } else {
+                            authDialogState.value = true
+                        }
+                    },
+                    modifier = buttonSize,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = colorScheme.secondaryContainer,
+                        contentColor = colorScheme.primary
+                    ),
+                    shape = buttonShape
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.leaderboards),
+                        fontFamily = AppTypography.titleLarge.fontFamily,
+                        fontSize = AppTypography.titleLarge.fontSize,
+                        color = colorScheme.primary
+                    )
+                }
             }
         }
     }
@@ -121,7 +130,7 @@ fun DialogAuth(dialogState: MutableState<Boolean>, navigateToRecords: () -> Unit
                     modifier = Modifier.padding(24.dp, 0.dp),
                     fontFamily = AppTypography.bodyMedium.fontFamily,
                     fontSize = AppTypography.bodyLarge.fontSize,
-                    color = colorScheme.secondary
+                    color = colorScheme.inversePrimary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
@@ -133,12 +142,14 @@ fun DialogAuth(dialogState: MutableState<Boolean>, navigateToRecords: () -> Unit
                     ),
                     value = username.value,
                     singleLine = true,
-                    label = { Text(
-                        text = stringResource(id = R.string.username),
-                        fontFamily = AppTypography.labelLarge.fontFamily,
-                        fontSize = AppTypography.labelLarge.fontSize,
-                        color = colorScheme.secondary
-                    ) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.username),
+                            fontFamily = AppTypography.labelLarge.fontFamily,
+                            fontSize = AppTypography.labelLarge.fontSize,
+                            color = colorScheme.inversePrimary
+                        )
+                    },
                     onValueChange = {
                         if (it.matches(pattern)) username.value = it
                         if (loginError) {
@@ -169,12 +180,14 @@ fun DialogAuth(dialogState: MutableState<Boolean>, navigateToRecords: () -> Unit
                     ),
                     value = password.value,
                     singleLine = true,
-                    label = { Text(
-                        text = stringResource(id = R.string.password),
-                        fontFamily = AppTypography.labelLarge.fontFamily,
-                        fontSize = AppTypography.labelLarge.fontSize,
-                        color = colorScheme.secondary
-                    ) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.password),
+                            fontFamily = AppTypography.labelLarge.fontFamily,
+                            fontSize = AppTypography.labelLarge.fontSize,
+                            color = colorScheme.inversePrimary
+                        )
+                    },
                     onValueChange = {
                         password.value = it.filter { it.isDigit() }.ifBlank { "" }
                         if (passwordError) {
@@ -210,17 +223,24 @@ fun DialogAuth(dialogState: MutableState<Boolean>, navigateToRecords: () -> Unit
                         }
                         signIn(auth, username.value, password.value, navigateToRecords)
                         authDialogState.value = false
-                    }) {
-                        Text(text = stringResource(id = R.string.sign_in), color = colorScheme.secondary)
+                    }, shape = RoundedCornerShape(16.dp)) {
+                        Text(
+                            text = stringResource(id = R.string.sign_in),
+                            fontFamily = AppTypography.bodyLarge.fontFamily,
+                            fontSize = AppTypography.bodyLarge.fontSize,
+                            color = colorScheme.inversePrimary
+                        )
                     }
                     Spacer(modifier = Modifier.width(24.dp))
                     OutlinedButton(onClick = {
                         navigateToRecords.invoke()
                         authDialogState.value = false
-                    }) {
+                    }, shape = RoundedCornerShape(16.dp)) {
                         Text(
                             text = stringResource(id = R.string.take_a_look),
-                            color = colorScheme.secondary
+                            fontFamily = AppTypography.bodyLarge.fontFamily,
+                            fontSize = AppTypography.bodyLarge.fontSize,
+                            color = colorScheme.inversePrimary
                         )
                     }
                 }
@@ -240,7 +260,7 @@ private fun signIn(auth: FirebaseAuth, username: String, password: String, navig
             Log.e("TAG", "signIn is successful")
         } else {
             Log.e("TAG", "signIn error, trying to create an account")
-            auth.createUserWithEmailAndPassword(finalUsername, password).addOnCompleteListener{
+            auth.createUserWithEmailAndPassword(finalUsername, password).addOnCompleteListener {
                 if (it.isSuccessful) {
                     auth.signInWithEmailAndPassword(finalUsername, password).addOnCompleteListener {
                         navigateToRecords.invoke()
