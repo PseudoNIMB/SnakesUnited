@@ -15,7 +15,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "0.5"
+        versionName = "0.7"
         archivesName = "SnakesUnited $versionName"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
