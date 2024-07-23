@@ -1,5 +1,6 @@
 package ru.pseudonimb.snakesunited.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -22,13 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.pseudonimb.snakesunited.R
@@ -39,10 +35,11 @@ import ru.pseudonimb.snakesunited.ui.theme.MainTheme
 import ru.pseudonimb.snakesunited.utils.DataStoreManager
 import ru.pseudonimb.snakesunited.utils.SettingsData
 import java.util.*
+import kotlin.time.Duration
 
 
 class GameOfSnakes(
-    private val scope: CoroutineScope,
+    val scope: CoroutineScope,
     val navigateMainMenu: () -> Unit,
     val dataStoreManager: DataStoreManager
 ) {

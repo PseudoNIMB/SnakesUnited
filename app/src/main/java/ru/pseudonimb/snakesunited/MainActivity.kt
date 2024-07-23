@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 import ru.pseudonimb.snakesunited.ui.screens.GameOfSnakes
 import ru.pseudonimb.snakesunited.ui.screens.MainScreen
 import ru.pseudonimb.snakesunited.ui.screens.Player
