@@ -38,6 +38,7 @@ import java.util.*
 import kotlin.time.Duration
 
 
+@OptIn(InternalCoroutinesApi::class)
 class GameOfSnakes(
     val scope: CoroutineScope,
     val navigateMainMenu: () -> Unit,
@@ -69,7 +70,7 @@ class GameOfSnakes(
                     fbs.collection("Records").document(auth.currentUser?.email?.substringBefore("@").toString()).get()
                         .addOnCompleteListener {
                             val startedHighScore = it.result.data?.values?.first().toString() + ""
-                            intStarted = startedHighScore.toInt()
+                            if (!startedHighScore.contains("null")) intStarted = startedHighScore.toInt()
                             scope.launch { dataStoreManager.saveSettings(SettingsData(intStarted)) }
                         }
                 }
@@ -112,8 +113,10 @@ class GameOfSnakes(
                                         )
                                 }
                             }
+                            //TODO Здесь завершать джобу
                         }
                         dialogState.value = true
+                        //TODO Здесь начинать джобу заново
 
                         snakeLength = SNAKE_SIZE
                     }
