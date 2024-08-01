@@ -1,6 +1,5 @@
 package ru.pseudonimb.snakesunited.ui.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -16,15 +15,17 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.pseudonimb.snakesunited.R
@@ -35,10 +36,7 @@ import ru.pseudonimb.snakesunited.ui.theme.MainTheme
 import ru.pseudonimb.snakesunited.utils.DataStoreManager
 import ru.pseudonimb.snakesunited.utils.SettingsData
 import java.util.*
-import kotlin.time.Duration
 
-
-@OptIn(InternalCoroutinesApi::class)
 class GameOfSnakes(
     val scope: CoroutineScope,
     val navigateMainMenu: () -> Unit,
@@ -50,7 +48,6 @@ class GameOfSnakes(
     val dialogState = mutableStateOf(false)
     var snakeLength = SNAKE_SIZE
     val fbs = Firebase.firestore
-
     var move = Pair(1, 0)
         set(value) {
             scope.launch {
@@ -117,7 +114,6 @@ class GameOfSnakes(
                         }
                         dialogState.value = true
                         //TODO Здесь начинать джобу заново
-
                         snakeLength = SNAKE_SIZE
                     }
 
@@ -145,11 +141,11 @@ fun Player(
     onClick: () -> Unit,
     game: GameOfSnakes
 ) {
+    val state = game.gameData.collectAsState(initial = null)
+    val dataState = game.dataStoreManager.getSettings().collectAsState(initial = SettingsData())
+
     MainTheme {
         Surface(color = colorScheme.surfaceVariant) {
-            val state = game.gameData.collectAsState(initial = null)
-            val dataState = game.dataStoreManager.getSettings().collectAsState(initial = SettingsData())
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom,

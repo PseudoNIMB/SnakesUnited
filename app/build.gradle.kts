@@ -14,8 +14,8 @@ android {
         applicationId = "ru.pseudonimb.snakesunited"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "0.9"
+        versionCode = 3
+        versionName = "1.0"
         archivesName = "SnakesUnited $versionName"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

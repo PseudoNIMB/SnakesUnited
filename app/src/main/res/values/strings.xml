@@ -24,4 +24,5 @@
     <string name="place">" place"</string>
     <string name="must_have_at_least_3_symbols">Must have at least 3 symbols</string>
     <string name="must_have_at_least_8_symbols">Must have at least 8 symbols</string>
+    <string name="successful_logout">"Logout as "</string>
 </resources>
