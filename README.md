@@ -1,1 +1,1 @@
-Main jetpack compose project. "Snake" game with some improvements and novadays features.
+Main jetpack compose project. "Snake" game with some improvements and novadays features. Currently represented in google play store as "Snakes United" by myself. Link: https://play.google.com/store/apps/details?id=ru.pseudonimb.snakesunited
